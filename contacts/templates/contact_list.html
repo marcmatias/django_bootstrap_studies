@@ -23,7 +23,7 @@
         <tr>
             {% for f in fields %}
             <th>
-                <a href="?{% url_replace ordering=f.f_name %}">
+                <a href="?{% url_replace ordering=f.f_name up='ord' %}">
                     {{f.f_normalized}}
                 </a>
             </th>

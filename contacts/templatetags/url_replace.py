@@ -12,5 +12,6 @@ def url_replace(context, **kwargs):
         query.pop('page', None)
     if kwargs.get('ordering'):
         query.pop('ordering', None)
+    query.pop('up', None)
     query.update(kwargs)
     return query.urlencode()

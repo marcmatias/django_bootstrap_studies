@@ -15,7 +15,7 @@ class ContactListView(ListView):
     model = Contact
     template_name = 'contact_list.html'
     paginate_by = 10
-    ordering = ['-first_name']
+    ordering = ['first_name']
 
     def get_queryset(self):
         queryset = super(ContactListView, self).get_queryset()
@@ -33,14 +33,15 @@ class ContactListView(ListView):
 
     def get_ordering(self):
         ordering = self.request.GET.get('ordering', 'first_name')
-
-        poped = [self.ordering.pop()]
-        if ordering in poped:
-            self.ordering.append('-'+ordering)
-        elif '-'+ordering in poped:
-            self.ordering.append(ordering)
-        else:
-            self.ordering.append(ordering)
+        changing = self.request.GET.get('up', None)
+        if(changing):
+            poped = [self.ordering.pop()]
+            if ordering in poped:
+                self.ordering.append('-'+ordering)
+            elif '-'+ordering in poped:
+                self.ordering.append(ordering)
+            else:
+                self.ordering.append(ordering)
 
         return self.ordering
 
