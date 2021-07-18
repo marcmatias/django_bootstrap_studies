@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load url_replace %}
+{% block content %}
+<h1>Lista de {{name}}</h1>
+
+<div class="row">
+    <div class="col">
+        <form action="." method="GET">
+            <div class="row">
+                <div class="col">
+                    <input name="search" class="form-control mb-2" type="text" placeholder="Buscar...">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-success mb-2" type="submit">OK</button>
+                    <button class="btn btn-link mb-2">Limpar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            {% for f in fields %}
+            <th>
+                <a href="?{% url_replace ordering=f.f_name %}">
+                    {{f.f_normalized}}
+                </a>
+            </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for object in object_list %}
+        <tr>
+            <td>{{ object.first_name }}</td>
+            <td>{{ object.last_name }}</td>
+            <td>{{ object.email }}</td>
+            <td>{{ object.birthday|date:"d/m/Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td>--</td>
+            <td colspan="2" class="text-center">0 retornos.</li>
+            <td>--</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% include "includes/pagination.html" %}
+{% endblock content %}
