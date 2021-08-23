@@ -8,10 +8,8 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def url_replace(context, **kwargs):
     query = context['request'].GET.copy()
-    if kwargs.get('page'):
-        query.pop('page', None)
-    if kwargs.get('ordering'):
-        query.pop('ordering', None)
-    query.pop('up', None)
+    for e in ['pag', 'col', 'ord', 'p_by']:
+        if kwargs.get(e):
+            query.pop(e, None)
     query.update(kwargs)
     return query.urlencode()

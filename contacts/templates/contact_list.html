@@ -8,45 +8,85 @@
         <form action="." method="GET">
             <div class="row">
                 <div class="col">
-                    <input name="search" class="form-control mb-2" type="text" placeholder="Buscar...">
+                    <input name="pesq" class="form-control mb-2" type="text" placeholder="Buscar...">
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-success mb-2" type="submit">OK</button>
-                    <button class="btn btn-link mb-2">Limpar</button>
+                    <button type="button" class="btn btn-link mb-2"
+                        onclick="window.location.href=`{% url 'contacts:contact_list' %}`">Limpar</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            {% for f in fields %}
-            <th>
-                <a href="?{% url_replace ordering=f.f_name up='ord' %}">
-                    {{f.f_normalized}}
-                </a>
-            </th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for object in object_list %}
-        <tr>
-            <td>{{ object.first_name }}</td>
-            <td>{{ object.last_name }}</td>
-            <td>{{ object.email }}</td>
-            <td>{{ object.birthday|date:"d/m/Y" }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td>--</td>
-            <td colspan="2" class="text-center">0 retornos.</li>
-            <td>--</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
-{% include "includes/pagination.html" %}
+<form method="post" action="/contact/delete">
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <input id="delete-button" class="btn btn-danger" type="submit" value="Delete"
+        onclick="return confirm('Tem certeza que quer prosseguir com a remoção?')" disabled>
+    {% csrf_token %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th><input id="toggle-all" type="checkbox" class="form-check-input" onClick="toggle(this)"
+                        title="selecionar todas as linhas dessa página" /> </th>
+                {% for f in fields %}
+                <th>
+                    <a href="?{% url_replace col=f.f_name ord=ord %}">
+                        {{f.f_normalized}}
+                    </a>
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in object_list %}
+            <tr>
+                <td><input type="checkbox" name="selection_{{object.id}}" class="checkbox form-check-input"
+                        onClick="buttonState()" /></td>
+                <td>{{ object.first_name }}</td>
+                <td>{{ object.last_name }}</td>
+                <td>{{ object.email }}</td>
+                <td>{{ object.birthday|date:"d/m/Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td>--</td>
+                <td colspan="2" class="text-center">0 retornos.</li>
+                <td>--</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+<div class="row">
+    <div class="col-md-9">
+        {% include "includes/pagination.html" %}
+    </div>
+    <div class="col-md-3 d-flex align-items-center">
+        <p class="text-muted w-100 text-center mt-3" style="font-size: 12px;">Linhas por página:</p>
+        <select class="form-select" aria-label="Seletor de paginação" name="p_by"
+            onChange="window.location.href=this.value">
+            {% for paginate_opt in paginate_opts %}
+            <option value='?{% url_replace p_by=paginate_opt %}' {% if paginate_opt == p_by %} selected {% endif %}>
+                {{paginate_opt}}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<script language="JavaScript">
+    checkbox = document.getElementById('toggle-all');
+    checkboxes = document.getElementsByClassName('checkbox');
+    button = document.getElementById('delete-button')
+    function buttonState() {
+        [...checkboxes].some(e => e.checked) ? button.disabled = false : button.disabled = true;
+        [...checkboxes].some(e => !e.checked) ? checkbox.checked = false : checkbox.checked = true;
+    }
+    function toggle(source) {
+        for (var i in checkboxes) checkboxes[i].checked = source.checked;
+        buttonState()
+    }
+</script>
 {% endblock content %}

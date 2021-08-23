@@ -12,7 +12,7 @@ fake = Faker()
 def gen_email(first_name: str, last_name: str):
     first_name = slugify(first_name)
     last_name = slugify(last_name)
-    email = f'{first_name}{last_name}.@email.com'
+    email = f'{first_name}{last_name}@email.com'
     return email
 
 
